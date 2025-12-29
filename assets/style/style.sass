@@ -11,24 +11,36 @@
 	box-sizing: border-box
 
 button
-	width: auto
-	height: auto
 	background: none
 	border: none
-	box-shadow: none
 	font: inherit
 	color: inherit
 	text-align: inherit
-	text-transform: inherit
-	user-select: text
-
-.play, .pause, .soundcloud, .youtube
-	-moz-osx-font-smoothing: grayscale
-	-webkit-font-smoothing: antialiased
-	font-style: normal
-	font-variant: normal
-	line-height: 1
-	text-rendering: auto
+	display: flex
+	align-items: center
+	padding: 15px 18px
+	border-radius: 10px
+	transition: 0.3s
+	cursor: pointer
+	@media (max-width: 1200px)
+		padding: 3vw 0 3vw 3vw
+		border-radius: 0
+button::before
+	content: "\f04b"
+	width: 35px
+	font-family: icons
+	font-size: 24px
+	color: rgba(255, 255, 255, 0.2)
+	transition: 0.3s
+	@media (max-width: 1200px)
+		width: 7.5vw
+		font-size: 5.5vw
+button.playing::before
+	content: "\f04c"
+button.active, button:hover
+	background: rgba(0, 0, 0, 0.3)
+	&::before
+		color: rgba(255, 255, 255, 0.5)
 
 html
 	background: black
@@ -45,16 +57,17 @@ body
 		display: grid
 		grid-template-columns: 400px 700px
 		gap: 30px
+		margin-top: 30px
 		@media (max-width: 1200px)
 			display: flex
 			flex-direction: column
 			align-items: center
 			gap: 0
 			width: 100vw
+			margin-top: 3vw
 		.progress
 			grid-column: span 2
 			height: 20px
-			margin-top: 30px
 			border-radius: 10px
 			background: rgba(255, 255, 255, 0.2)
 			overflow: hidden
@@ -62,7 +75,6 @@ body
 			@media (max-width: 1200px)
 				width: 94vw
 				height: 5vw
-				margin-top: 3vw
 			.bar
 				width: 0px
 				height: 100%
@@ -104,49 +116,16 @@ body
 			@media (max-width: 1200px)
 				width: 100vw
 				margin-top: 5vw
-			button
-				display: flex
-				align-items: center
-				padding: 15px 18px
-				border-radius: 10px
-				transition: 0.3s
-				cursor: pointer
-				&:hover
-					background: rgba(0, 0, 0, 0.3)
-					&::before
-						color: rgba(255, 255, 255, 0.5)
+			.track-title, .track-length
+				font-size: 22px
+				font-weight: 400
+				color: rgb(230, 230, 230)
 				@media (max-width: 1200px)
-					padding: 3vw 0 3vw 3vw
-					border-radius: 0
-				.track-title
-					font-size: 22px
-					font-weight: 400
-					color: rgb(230, 230, 230)
-					@media (max-width: 1200px)
-						font-size: 5vw
-				.track-length
-					margin-left: auto
-					font-size: 22px
-					font-weight: 400
-					color: rgb(230, 230, 230)
-					@media (max-width: 1200px)
-						display: none
-			button.active
-				background: rgba(0, 0, 0, 0.3)
-				&::before
-					color: rgba(255, 255, 255, 0.5)
-			button::before
-				content: "\f04b"
-				width: 35px
-				font-family: icons
-				font-size: 24px
-				color: rgba(255, 255, 255, 0.2)
-				transition: 0.3s
+					font-size: 5vw
+			.track-length
+				margin-left: auto
 				@media (max-width: 1200px)
-					width: 7.5vw
-					font-size: 5.5vw
-			button.playing::before
-				content: "\f04c"
+					display: none
 		.icons
 			position: absolute
 			bottom: 0
