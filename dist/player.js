@@ -18,16 +18,25 @@ export class Player {
         progress.addEventListener('click', e => {
             const rect = progress.getBoundingClientRect();
             const percent = (e.clientX - rect.left) / rect.width;
+            if (!this.audio.duration)
+                return;
             this.audio.currentTime = percent * this.audio.duration;
         });
     }
     bindAudio() {
         this.audio.addEventListener('timeupdate', () => {
+            if (!this.audio.duration)
+                return;
             bar.style.width = `${(this.audio.currentTime / this.audio.duration) * 100}%`;
         });
         this.audio.addEventListener('ended', () => {
-            bar.style.width = '0%';
-            buttons.forEach(b => { b.classList.remove('playing'); });
+            const nextId = this.getNextId();
+            if (!nextId) {
+                buttons.forEach(b => b.classList.remove('playing'));
+                bar.style.width = '0%';
+                return;
+            }
+            this.switchTo(nextId);
         });
     }
     handleClick(button) {
@@ -36,16 +45,24 @@ export class Player {
             button.classList.toggle('playing');
             return;
         }
-        buttons.forEach(b => { b.classList.remove('active', 'playing'); });
-        this.switchTo(button);
+        this.switchTo(button.dataset.id || this.defaultId);
     }
-    switchTo(button) {
-        this.activeId = button.dataset.id || this.defaultId;
+    switchTo(id) {
+        this.activeId = id;
         this.audio.src = `assets/mix/${this.activeId}.mp3`;
         this.audio.play();
+        this.updateUI();
+    }
+    updateUI() {
+        buttons.forEach(b => { b.classList.remove('active', 'playing'); });
         bar.style.width = '0%';
         image.src = `assets/images/${this.activeId}.webp`;
-        title.textContent = tracks.find(track => this.activeId === track.id)?.title ?? 'title not found';
-        button.classList.add('active', 'playing');
+        title.textContent = tracks.find(t => this.activeId === t.id)?.title ?? 'title not found';
+        const activeButton = buttons.find(b => this.activeId === b.dataset.id);
+        activeButton?.classList.add('active', 'playing');
+    }
+    getNextId() {
+        const index = tracks.findIndex(t => this.activeId === t.id);
+        return tracks[index + 1]?.id ?? null;
     }
 }
