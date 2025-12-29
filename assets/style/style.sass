@@ -52,102 +52,101 @@ body
 	min-height: 100vh
 	background: linear-gradient(rgb(125, 24, 47), rgb(16, 2, 6))
 	font-family: quicksand, arial
-	main
-		position: relative
-		display: grid
-		grid-template-columns: 400px 700px
-		gap: 30px
-		margin-top: 30px
+	color: rgb(230, 230, 230)
+
+main
+	position: relative
+	display: grid
+	grid-template-columns: 400px 700px
+	gap: 30px
+	margin-top: 30px
+	@media (max-width: 1200px)
+		display: flex
+		flex-direction: column
+		align-items: center
+		gap: 0
+		width: 100vw
+		margin-top: 3vw
+	.progress
+		grid-column: span 2
+		height: 20px
+		border-radius: 10px
+		background: rgba(255, 255, 255, 0.2)
+		overflow: hidden
+		cursor: pointer
 		@media (max-width: 1200px)
-			display: flex
-			flex-direction: column
-			align-items: center
-			gap: 0
-			width: 100vw
+			width: 94vw
+			height: 5vw
+		.bar
+			width: 0px
+			height: 100%
+			background: rgba(255, 255, 255, 0.3)
+	.meta
+		cursor: default
+		@media (max-width: 1200px)
+			width: 94vw
 			margin-top: 3vw
-		.progress
-			grid-column: span 2
-			height: 20px
+		.image
+			display: block
+			width: 400px
+			height: 400px
 			border-radius: 10px
-			background: rgba(255, 255, 255, 0.2)
+			background: rgba(0, 0, 0, 0.3)
+			@media (max-width: 1200px)
+				width: 94vw
+				height: 94vw
+		.title
+			margin-top: 20px
+			font-size: 24px
+			font-weight: 500
+			text-overflow: ellipsis
 			overflow: hidden
-			cursor: pointer
+			white-space: nowrap
 			@media (max-width: 1200px)
-				width: 94vw
-				height: 5vw
-			.bar
-				width: 0px
-				height: 100%
-				background: rgba(255, 255, 255, 0.3)
-		.meta
-			cursor: default
+				margin-top: 4vw
+				font-size: 5.8vw
+		.artist
+			font-size: 24px
+			font-weight: 400
+			color: rgb(200, 200, 200)
 			@media (max-width: 1200px)
-				width: 94vw
-				margin-top: 3vw
-			.image
-				display: block
-				width: 400px
-				height: 400px
-				border-radius: 10px
-				background: rgba(0, 0, 0, 0.3)
-				@media (max-width: 1200px)
-					width: 94vw
-					height: 94vw
-			.title
-				margin-top: 20px
-				font-size: 24px
-				font-weight: 500
-				color: rgb(230, 230, 230)
-				text-overflow: ellipsis
-				overflow: hidden
-				white-space: nowrap
-				@media (max-width: 1200px)
-					margin-top: 4vw
-					font-size: 5.8vw
-			.artist
-				font-size: 24px
-				font-weight: 400
-				color: rgb(200, 200, 200)
-				@media (max-width: 1200px)
-					font-size: 5.8vw
-		.playlist
-			display: flex
-			flex-direction: column
+				font-size: 5.8vw
+	.playlist
+		display: flex
+		flex-direction: column
+		@media (max-width: 1200px)
+			width: 100vw
+			margin-top: 5vw
+		.track-title, .track-length
+			font-size: 22px
+			font-weight: 400
 			@media (max-width: 1200px)
-				width: 100vw
-				margin-top: 5vw
-			.track-title, .track-length
-				font-size: 22px
-				font-weight: 400
-				color: rgb(230, 230, 230)
-				@media (max-width: 1200px)
-					font-size: 5vw
-			.track-length
-				margin-left: auto
-				@media (max-width: 1200px)
-					display: none
-		.icons
-			position: absolute
-			bottom: 0
-			right: 0
-			display: flex
-			column-gap: 20px
-			cursor: default
+				font-size: 5vw
+		.track-length
+			margin-left: auto
 			@media (max-width: 1200px)
-				position: static
-				column-gap: 8vw
-				padding: 10vw 0 4vw 0
-			.soundcloud, .youtube
-				font-family: icons
-				font-size: 44px
-				text-decoration: none
-				color: rgba(255, 255, 255, 0.2)
-				transition: 0.3s
-				&:hover
-					color: rgba(255, 255, 255, 0.5)
-				@media (max-width: 1200px)
-					font-size: 10vw
-			.soundcloud::before
-				content: "\f1be"
-			.youtube::before
-				content: "\f167"
+				display: none
+	.icons
+		position: absolute
+		bottom: 0
+		right: 0
+		display: flex
+		column-gap: 20px
+		@media (max-width: 1200px)
+			position: static
+			column-gap: 8vw
+			padding: 10vw 0 4vw 0
+		.soundcloud, .youtube
+			font-family: icons
+			font-size: 44px
+			text-decoration: none
+			color: rgba(255, 255, 255, 0.2)
+			transition: 0.3s
+			&:hover
+				color: rgba(255, 255, 255, 0.5)
+			@media (max-width: 1200px)
+				font-size: 10vw
+		.soundcloud::before
+			content: "\f1be"
+		.youtube::before
+			content: "\f167"
