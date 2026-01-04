@@ -92,27 +92,42 @@ type MusikConfig = Track[]
 		const metaSection = document.createElement('section')
 		metaSection.className = 'meta'
 
-		const imageImg = document.createElement('img')
-		imageImg.className = 'image'
+		const artworkImg = document.createElement('img')
+		artworkImg.className = 'image'
+		artworkImg.src = config[0].artwork
 
 		const titleP = document.createElement('p')
 		titleP.className = 'title'
+		titleP.textContent = config[0].title
 
 		const artistP = document.createElement('p')
 		artistP.className = 'artist'
+		artistP.textContent = config[0].artist
 
 		const playlistSection = document.createElement('section')
 		playlistSection.className = 'playlist'
 
-		config.forEach((track) => {
-			const trackDiv = document.createElement('div')
-			trackDiv.textContent = track.title
-			playlistSection.appendChild(trackDiv)
+		config.forEach((track, i) => {
+			const button = document.createElement('button')
+			if (i === 0) {
+				button.className = 'active'
+			}
+			button.setAttribute('aria-label', `Play ${track.title} by ${track.artist}`)
+			const trackTitleP = document.createElement('p')
+			trackTitleP.className = 'track-title'
+			trackTitleP.textContent = track.title
+			const trackDurationSpan = document.createElement('span')
+			trackDurationSpan.className = 'track-duration'
+			trackDurationSpan.textContent = track.duration
+
+			button.appendChild(trackTitleP)
+			button.appendChild(trackDurationSpan)
+			playlistSection.appendChild(button)
 		})
 
 		progressSection.appendChild(barDiv)
 
-		metaSection.appendChild(imageImg)
+		metaSection.appendChild(artworkImg)
 		metaSection.appendChild(titleP)
 		metaSection.appendChild(artistP)
 
