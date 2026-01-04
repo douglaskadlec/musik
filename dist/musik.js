@@ -59,7 +59,7 @@
     function createPlayer(mount, config) {
         const shadow = mount.attachShadow({ mode: 'open' });
         const style = document.createElement('style');
-        style.textContent = ``;
+        style.textContent = `:host{font-family:inherit,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;font-size:inherit;font-weight:inherit;color:inherit}*{padding:0;margin:0;box-sizing:border-box}.container{position:relative;display:grid;grid-template-columns:35% 1fr;gap:1.875em;width:100%}.container .progress{grid-column:span 2;height:1.25em;border-radius:.625em;overflow:hidden;cursor:pointer}.container .progress .bar{width:0;height:100%}.container .meta{cursor:default}.container .meta .image{display:block;width:100%;border-radius:.625em}.container .meta .title{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .playlist{display:flex;flex-direction:column}.container .playlist button{display:flex;align-items:center;padding:1em 1.125em;border-radius:.625em;border:none;background:none;font-family:inherit;font-size:inherit;font-weight:inherit;color:inherit;text-align:inherit;transition:.3s;cursor:pointer}.container .playlist button .track-duration{margin-left:auto}`;
         const containerDiv = document.createElement('div');
         containerDiv.className = 'container';
         const progressSection = document.createElement('section');
