@@ -1,0 +1,19 @@
+{
+	"compilerOptions": {
+		"target": "ES2019",
+		"lib": ["DOM", "ES2019"],
+		"module": "none",
+		"outFile": "dist/musik.js",
+		"removeComments": false,
+		"sourceMap": false,
+		"strict": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"useUnknownInCatchVariables": true,
+		"noImplicitReturns": true,
+		"noFallthroughCasesInSwitch": true,
+		"forceConsistentCasingInFileNames": true,
+		"skipLibCheck": true
+	},
+	"include": ["src/musik.ts"]
+}
