@@ -1,37 +1,36 @@
 "use strict";
 (async function () {
-    var _a;
     const CSS = `:host{container-type:inline-size;font-family:inherit,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;font-size:inherit;font-weight:inherit;color:inherit}*{padding:0;margin:0;box-sizing:border-box}.container{position:relative;display:grid;grid-template-columns:minmax(0, 17em) 1fr;gap:1.4em;width:100%}@container (max-width: 45em){.container{grid-template-columns:1fr}}.container .progress{grid-column:span 2;height:.9em;border-radius:.5em;background:color-mix(in srgb, currentColor 20%, transparent);overflow:hidden;cursor:pointer}@container (max-width: 45em){.container .progress{grid-column:span 1}}.container .progress .bar{width:0;height:100%;background:currentColor;opacity:.6}.container .meta{cursor:default}.container .meta .image{display:block;aspect-ratio:1/1;object-fit:cover;width:100%;border-radius:.5em}.container .meta .title,.container .meta .artist{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .meta .title{margin-top:.7em;font-size:1.1em}.container .playlist{display:flex;flex-direction:column}.container .playlist button{display:grid;grid-template-columns:max-content minmax(0, 1fr) max-content;align-items:center;column-gap:.4em;padding:.7em;border-radius:.5em;border:none;background:none;font-family:inherit;font-size:inherit;font-weight:inherit;color:inherit;text-align:inherit;transition:background .3s;cursor:pointer}.container .playlist button .play-icon,.container .playlist button .pause-icon{display:flex;width:1.3em;fill:currentColor;opacity:.2;transition:opacity .3s}.container .playlist button .pause-icon{display:none}.container .playlist button .track-title{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .playlist button .track-duration{margin-left:auto}.container .playlist button.active,.container .playlist button:hover{background:color-mix(in srgb, currentColor 20%, transparent)}.container .playlist button.active .play-icon,.container .playlist button.active .pause-icon,.container .playlist button:hover .play-icon,.container .playlist button:hover .pause-icon{opacity:.6}.container .playlist button:focus-visible{outline:2px solid currentColor}`;
-    const script = document.currentScript;
-    if (!script)
-        return;
-    const targetSelector = (_a = script.dataset.target) !== null && _a !== void 0 ? _a : '#musik';
-    const configUrl = script.dataset.config;
-    const mount = document.querySelector(targetSelector);
-    if (!mount) {
-        console.error('Musik: target element not found');
-        return;
-    }
     try {
-        const config = await loadConfig();
+        const script = document.currentScript;
+        if (!script) {
+            return;
+        }
+        const targetElement = script.dataset.target || '#musik';
+        const mount = document.querySelector(targetElement);
+        if (!mount) {
+            throw new Error(`Target element "${targetElement}" not found`);
+        }
+        const configUrl = script.dataset.config;
+        if (!configUrl) {
+            throw new Error('No data-config attribute provided');
+        }
+        const config = await loadConfig(configUrl);
         validateConfig(config);
+        Object.freeze(config);
         createPlayer(mount, config);
     }
     catch (err) {
         if (err instanceof Error) {
-            console.error('Musik:', err.message);
+            console.error(`Musik: ${err.message}`);
         }
     }
-    async function loadConfig() {
-        if (!configUrl) {
-            throw new Error('No data-config attribute provided');
-        }
+    async function loadConfig(configUrl) {
         const res = await fetch(configUrl);
         if (!res.ok) {
-            throw new Error('Failed to load Musik config');
+            throw new Error(`Failed to load config from "${configUrl}"`);
         }
-        const config = (await res.json());
-        return config;
+        return await res.json();
     }
     function validateConfig(config) {
         if (!Array.isArray(config)) {
