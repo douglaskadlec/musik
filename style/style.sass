@@ -1,0 +1,93 @@
+:host
+	container-type: inline-size
+	font-family: inherit, system-ui, -apple-system, BlinkMacSystemFont, sans-serif
+	font-size: inherit
+	font-weight: inherit
+	color: inherit
+
+*
+	padding: 0
+	margin: 0
+	box-sizing: border-box
+
+.container
+	position: relative
+	display: grid
+	grid-template-columns: minmax(0, 17em) 1fr
+	gap: 1.4em
+	width: 100%
+	@container (max-width: 45em)
+		grid-template-columns: 1fr
+	.progress
+		grid-column: span 2
+		height: 0.9em
+		border-radius: 0.5em
+		background: color-mix(in srgb, currentColor 20%, transparent)
+		overflow: hidden
+		cursor: pointer
+		@container (max-width: 45em)
+			grid-column: span 1
+		.bar
+			width: 0
+			height: 100%
+			background: currentColor
+			opacity: 0.6
+	.meta
+		cursor: default
+		.image
+			display: block
+			aspect-ratio: 1/1
+			object-fit: cover
+			width: 100%
+			border-radius: 0.5em
+		.title, .artist
+			text-overflow: ellipsis
+			overflow: hidden
+			white-space: nowrap
+		.title
+			margin-top: 0.7em
+			font-size: 1.1em
+	.playlist
+		display: flex
+		flex-direction: column
+		button
+			display: grid
+			grid-template-columns: max-content minmax(0, 1fr) max-content
+			align-items: center
+			column-gap: 0.4em
+			padding: 0.7em
+			border-radius: 0.5em
+			border: none
+			background: none
+			font-family: inherit
+			font-size: inherit
+			font-weight: inherit
+			color: inherit
+			text-align: inherit
+			transition: background 0.3s
+			cursor: pointer
+			.play-icon, .pause-icon
+				display: flex
+				width: 1.3em
+				fill: currentColor
+				opacity: 0.2
+				transition: opacity 0.3s
+			.pause-icon
+				display: none
+			.track-title
+				text-overflow: ellipsis
+				overflow: hidden
+				white-space: nowrap
+			.track-duration
+				margin-left: auto
+		button.active, button:hover
+			background: color-mix(in srgb, currentColor 20%, transparent)
+			.play-icon, .pause-icon
+				opacity: 0.6
+		button.playing
+			.play-icon
+				display: none
+			.pause-icon
+				display: flex
+		button:focus-visible
+			outline: 2px solid currentColor
