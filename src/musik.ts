@@ -1,10 +1,11 @@
 interface PlayerDOM {
+	container: HTMLDivElement
 	progress: HTMLElement
 	bar: HTMLDivElement
 	artwork: HTMLImageElement
 	title: HTMLParagraphElement
 	artist: HTMLParagraphElement
-	buttons: HTMLButtonElement[]
+	readonly buttons: HTMLButtonElement[]
 }
 
 interface MusikOptions {
@@ -39,7 +40,7 @@ interface MusikConfig {
 }
 
 ;(async function () {
-	const CSS = `*{padding:0;margin:0;box-sizing:border-box}:host{container-type:inline-size;--color-textPrimary: #fff;--color-textSecondary: #fff;--color-accentPrimary: #fff;--color-accentSecondary: #808080;--color-accentTertiary: #808080;--fontWeight-primary: 400;--fontWeight-secondary: 400;--fontWeight-tertiary: 400;--radius-primary: 0}.container{position:relative;display:grid;grid-template-columns:minmax(0, 18.18em) 1fr;gap:1.36em;width:100%}@container (max-width: 45em){.container{grid-template-columns:1fr}}.container .progress{grid-column:span 2;height:.9em;border-radius:var(--radius-primary);background:var(--color-accentSecondary);overflow:hidden;cursor:pointer}@container (max-width: 45em){.container .progress{grid-column:span 1}}.container .progress .bar{width:0;height:100%;background:var(--color-accentPrimary)}.container .meta{cursor:default}.container .meta .image{display:block;aspect-ratio:1/1;object-fit:cover;width:100%;border-radius:var(--radius-primary)}.container .meta .title,.container .meta .artist{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .meta .title{margin-top:.8em;font-size:1.1em;color:var(--color-textPrimary);font-weight:var(--fontWeight-secondary)}.container .meta .artist{font-size:1.1em;color:var(--color-textSecondary);font-weight:var(--fontWeight-tertiary)}.container .playlist{display:flex;flex-direction:column}.container .playlist button{display:grid;grid-template-columns:max-content minmax(0, 1fr) max-content;align-items:center;column-gap:.4em;padding:.7em;border-radius:var(--radius-primary);border:none;background:none;font-family:inherit;font-size:inherit;color:var(--color-textPrimary);font-weight:var(--fontWeight-primary);text-align:left;transition:background .3s;cursor:pointer}.container .playlist button .play-icon,.container .playlist button .pause-icon{display:flex;width:1.3em;fill:var(--color-accentSecondary);transition:fill .3s}.container .playlist button .pause-icon{display:none}.container .playlist button .track-title,.container .playlist button .track-duration{color:var(--color-textPrimary)}.container .playlist button .track-title{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .playlist button .track-duration{margin-left:auto}.container .playlist button.active,.container .playlist button:hover{background:var(--color-accentTertiary)}.container .playlist button.active .play-icon,.container .playlist button.active .pause-icon,.container .playlist button:hover .play-icon,.container .playlist button:hover .pause-icon{fill:var(--color-accentPrimary)}.container .playlist button.playing .play-icon{display:none}.container .playlist button.playing .pause-icon{display:flex}.container .playlist button:focus-visible{outline:2px solid var(--color-textPrimary)}`
+	const CSS = `*{padding:0;margin:0;box-sizing:border-box}:host{container-type:inline-size;--color-textPrimary: #fff;--color-textSecondary: #fff;--color-accentPrimary: #fff;--color-accentSecondary: #808080;--color-accentTertiary: #808080;--fontWeight-primary: 400;--fontWeight-secondary: 400;--fontWeight-tertiary: 400;--radius-primary: 0}.container{position:relative;display:grid;grid-template-columns:minmax(0, 18.18em) 1fr;gap:1.36em;width:100%}@container (max-width: 45em){.container{grid-template-columns:1fr}}.container .progress{grid-column:span 2;height:.9em;border-radius:var(--radius-primary);background:var(--color-accentSecondary);overflow:hidden;cursor:pointer}@container (max-width: 45em){.container .progress{grid-column:span 1}}.container .progress .bar{width:0;height:100%;background:var(--color-accentPrimary)}.container .meta{cursor:default}.container .meta .image{display:block;aspect-ratio:1/1;object-fit:cover;width:100%;border-radius:var(--radius-primary)}.container .meta .title,.container .meta .artist{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .meta .title{margin-top:.8em;font-size:1.1em;color:var(--color-textPrimary);font-weight:var(--fontWeight-secondary)}.container .meta .artist{font-size:1.1em;color:var(--color-textSecondary);font-weight:var(--fontWeight-tertiary)}.container .playlist{display:flex;flex-direction:column}.container .playlist button{display:grid;grid-template-columns:max-content minmax(0, 1fr) max-content;align-items:center;column-gap:.4em;padding:.7em;border-radius:var(--radius-primary);border:none;background:none;font-family:inherit;font-size:inherit;color:var(--color-textPrimary);font-weight:var(--fontWeight-primary);text-align:left;transition:background .3s;cursor:pointer}.container .playlist button .play-icon,.container .playlist button .pause-icon{display:flex;width:1.3em;fill:var(--color-accentSecondary);transition:fill .3s}.container .playlist button .pause-icon{display:none}.container .playlist button .track-title,.container .playlist button .track-duration{color:var(--color-textPrimary)}.container .playlist button .track-title{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .playlist button .track-duration{margin-left:auto}.container .playlist button.active,.container .playlist button:hover{background:var(--color-accentTertiary)}.container .playlist button.active .play-icon,.container .playlist button.active .pause-icon,.container .playlist button:hover .play-icon,.container .playlist button:hover .pause-icon{fill:var(--color-accentPrimary)}.container .playlist button:focus-visible{outline:2px solid var(--color-textPrimary)}.container.playing .playlist button.active .play-icon{display:none}.container.playing .playlist button.active .pause-icon{display:flex}`
 
 	class Player {
 		private audio: HTMLAudioElement
@@ -62,7 +63,8 @@ interface MusikConfig {
 			})
 			this.dom.progress.addEventListener('click', e => {
 				const rect = this.dom.progress.getBoundingClientRect()
-				const percent = (e.clientX - rect.left) / rect.width
+				const raw = (e.clientX - rect.left) / rect.width
+				const percent = Math.min(Math.max(raw, 0), 1)
 				if (!this.audio.duration) return
 				this.audio.currentTime = percent * this.audio.duration
 			})
@@ -71,22 +73,21 @@ interface MusikConfig {
 		private bindAudio() {
 			this.audio.addEventListener('timeupdate', () => {
 				if (!this.audio.duration) return
-				this.dom.bar.style.width = `${(this.audio.currentTime / this.audio.duration) * 100}%`
+				this.dom.bar.style.width = `${Math.min((this.audio.currentTime / this.audio.duration) * 100, 100)}%`
 			})
 			this.audio.addEventListener('ended', () => {
-				if (!this.config.tracks[this.currentIndex + 1]) {
-					this.audio.currentTime = 0
-					this.dom.bar.style.width = '0%'
-					this.dom.buttons.forEach(b => b.classList.remove('playing'))
-					return
+				if (this.config.tracks[this.currentIndex + 1]) {
+					this.switchTo(this.currentIndex + 1)
 				}
-				this.switchTo(this.currentIndex + 1)
+				else {
+					this.switchTo(0)
+				}
 			})
 			this.audio.addEventListener('play', () => {
-				this.dom.buttons[this.currentIndex].classList.add('playing')
+				this.dom.container.classList.add('playing')
 			})
 			this.audio.addEventListener('pause', () => {
-				this.dom.buttons[this.currentIndex].classList.remove('playing')
+				this.dom.container.classList.remove('playing')
 			})
 		}
 
@@ -106,18 +107,24 @@ interface MusikConfig {
 
 		private switchTo(i: number) {
 			this.currentIndex = i
+			this.audio.pause()
+			this.audio.currentTime = 0
 			this.audio.src = this.config.tracks[this.currentIndex].audio
-			this.audio.play()
+			this.audio.load()
+			this.audio.play().catch(err => {
+				console.error(`Musik: ${err.message}`)
+			})
 			this.updateUI()
 		}
 
 		private updateUI() {
-			this.dom.buttons.forEach(b => {b.classList.remove('active', 'playing')})
+			this.dom.buttons.forEach(b => {b.classList.remove('active')})
 			this.dom.bar.style.width = '0%'
 			this.dom.artwork.src = this.config.tracks[this.currentIndex].artwork
+			this.dom.artwork.alt = `${this.config.tracks[this.currentIndex].title} artwork`
 			this.dom.title.textContent = this.config.tracks[this.currentIndex].title
 			this.dom.artist.textContent = this.config.tracks[this.currentIndex].artist
-			this.dom.buttons[this.currentIndex].classList.add('active', 'playing')
+			this.dom.buttons[this.currentIndex].classList.add('active')
 		}
 	}
 
@@ -138,7 +145,15 @@ interface MusikConfig {
 		const config = await loadConfig(configUrl)
 		validateConfig(config)
 		Object.freeze(config)
-		createPlayer(root, config)
+		if (root.shadowRoot) {
+			console.warn('Musik: already initialized')
+			return
+		}
+		if (config.options) {
+			applyOptions(root, config.options)
+		}
+		const dom = mountPlayerDOM(root, config)
+		new Player(config, dom).init()
 	}
 	catch (err) {
 		if (err instanceof Error) {
@@ -214,11 +229,38 @@ interface MusikConfig {
 		})
 	}
 
-	function createPlayer(root: HTMLElement, config: MusikConfig): void {
-		if (root.shadowRoot) {
-			console.warn('Musik: already initialized')
-			return
+	function applyOptions(root: HTMLElement, options: MusikOptions) {
+		const { colors, fontWeight, radius } = options
+		if (colors?.textPrimary) {
+			root.style.setProperty('--color-textPrimary', colors.textPrimary)
 		}
+		if (colors?.textSecondary) {
+			root.style.setProperty('--color-textSecondary', colors.textSecondary)
+		}
+		if (colors?.accentPrimary) {
+			root.style.setProperty('--color-accentPrimary', colors.accentPrimary)
+		}
+		if (colors?.accentSecondary) {
+			root.style.setProperty('--color-accentSecondary', colors.accentSecondary)
+		}
+		if (colors?.accentTertiary) {
+			root.style.setProperty('--color-accentTertiary', colors.accentTertiary)
+		}
+		if (fontWeight?.primary) {
+			root.style.setProperty('--fontWeight-primary', fontWeight.primary)
+		}
+		if (fontWeight?.secondary) {
+			root.style.setProperty('--fontWeight-secondary', fontWeight.secondary)
+		}
+		if (fontWeight?.tertiary) {
+			root.style.setProperty('--fontWeight-tertiary', fontWeight.tertiary)
+		}
+		if (radius?.primary) {
+			root.style.setProperty('--radius-primary', radius.primary)
+		}
+	}
+
+	function mountPlayerDOM(root: HTMLElement, config: MusikConfig): PlayerDOM {
 		const shadow = root.attachShadow({ mode: 'open' })
 		const style = document.createElement('style')
 		style.textContent = CSS
@@ -233,7 +275,7 @@ interface MusikConfig {
 		const artworkImg = document.createElement('img')
 		artworkImg.className = 'image'
 		artworkImg.src = config.tracks[0].artwork
-		artworkImg.alt = ''
+		artworkImg.alt = `${config.tracks[0].title} artwork`
 		artworkImg.loading = 'lazy'
 		const titleP = document.createElement('p')
 		titleP.className = 'title'
@@ -275,53 +317,16 @@ interface MusikConfig {
 		containerDiv.appendChild(progressSection)
 		containerDiv.appendChild(metaSection)
 		containerDiv.appendChild(playlistSection)
-
-		if (config.options) {
-			applyOptions(root, config.options)
-		}
-
 		shadow.appendChild(style)
 		shadow.appendChild(containerDiv)
-		const dom: PlayerDOM = {
+		return {
+			container: containerDiv,
 			progress: progressSection,
 			bar: barDiv,
 			artwork: artworkImg,
 			title: titleP,
 			artist: artistP,
 			buttons: Array.from(playlistSection.querySelectorAll('button'))
-		}
-		const player = new Player(config, dom)
-		player.init()
-	}
-
-	function applyOptions(root: HTMLElement, options: MusikOptions) {
-		const { colors, fontWeight, radius } = options
-		if (colors?.textPrimary) {
-			root.style.setProperty('--color-textPrimary', colors.textPrimary)
-		}
-		if (colors?.textSecondary) {
-			root.style.setProperty('--color-textSecondary', colors.textSecondary)
-		}
-		if (colors?.accentPrimary) {
-			root.style.setProperty('--color-accentPrimary', colors.accentPrimary)
-		}
-		if (colors?.accentSecondary) {
-			root.style.setProperty('--color-accentSecondary', colors.accentSecondary)
-		}
-		if (colors?.accentTertiary) {
-			root.style.setProperty('--color-accentTertiary', colors.accentTertiary)
-		}
-		if (fontWeight?.primary) {
-			root.style.setProperty('--fontWeight-primary', fontWeight.primary)
-		}
-		if (fontWeight?.secondary) {
-			root.style.setProperty('--fontWeight-secondary', fontWeight.secondary)
-		}
-		if (fontWeight?.tertiary) {
-			root.style.setProperty('--fontWeight-tertiary', fontWeight.tertiary)
-		}
-		if (radius?.primary) {
-			root.style.setProperty('--radius-primary', radius.primary)
 		}
 	}
 })()

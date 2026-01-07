@@ -95,10 +95,12 @@
 			background: var(--color-accentTertiary)
 			.play-icon, .pause-icon
 				fill: var(--color-accentPrimary)
-		button.playing
+		button:focus-visible
+			outline: 2px solid var(--color-textPrimary)
+.container.playing
+	.playlist
+		button.active
 			.play-icon
 				display: none
 			.pause-icon
 				display: flex
-		button:focus-visible
-			outline: 2px solid var(--color-textPrimary)
