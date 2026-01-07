@@ -1,7 +1,12 @@
 "use strict";
 ;
 (async function () {
-    const CSS = `*{padding:0;margin:0;box-sizing:border-box}:host{container-type:inline-size;--color-textPrimary: #fff;--color-textSecondary: #fff;--color-accentPrimary: #fff;--color-accentSecondary: #808080;--color-accentTertiary: #808080;--fontWeight-primary: 400;--fontWeight-secondary: 400;--fontWeight-tertiary: 400;--radius-primary: 0}.container{position:relative;display:grid;grid-template-columns:minmax(0, 18.18em) 1fr;gap:1.36em;width:100%}@container (max-width: 45em){.container{grid-template-columns:1fr}}.container .progress{grid-column:span 2;height:.9em;border-radius:var(--radius-primary);background:var(--color-accentSecondary);overflow:hidden;cursor:pointer}@container (max-width: 45em){.container .progress{grid-column:span 1}}.container .progress .bar{width:0;height:100%;background:var(--color-accentPrimary)}.container .meta{cursor:default}.container .meta .image{display:block;aspect-ratio:1/1;object-fit:cover;width:100%;border-radius:var(--radius-primary)}.container .meta .title,.container .meta .artist{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .meta .title{margin-top:.8em;font-size:1.1em;color:var(--color-textPrimary);font-weight:var(--fontWeight-secondary)}.container .meta .artist{font-size:1.1em;color:var(--color-textSecondary);font-weight:var(--fontWeight-tertiary)}.container .playlist{display:flex;flex-direction:column}.container .playlist button{display:grid;grid-template-columns:max-content minmax(0, 1fr) max-content;align-items:center;column-gap:.4em;padding:.7em;border-radius:var(--radius-primary);border:none;background:none;font-family:inherit;font-size:inherit;color:var(--color-textPrimary);font-weight:var(--fontWeight-primary);text-align:left;transition:background .3s;cursor:pointer}.container .playlist button .play-icon,.container .playlist button .pause-icon{display:flex;width:1.3em;fill:var(--color-accentSecondary);transition:fill .3s}.container .playlist button .pause-icon{display:none}.container .playlist button .track-title,.container .playlist button .track-duration{color:var(--color-textPrimary)}.container .playlist button .track-title{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .playlist button .track-duration{margin-left:auto}.container .playlist button.active,.container .playlist button:hover{background:var(--color-accentTertiary)}.container .playlist button.active .play-icon,.container .playlist button.active .pause-icon,.container .playlist button:hover .play-icon,.container .playlist button:hover .pause-icon{fill:var(--color-accentPrimary)}.container .playlist button:focus-visible{outline:2px solid var(--color-textPrimary)}.container.playing .playlist button.active .play-icon{display:none}.container.playing .playlist button.active .pause-icon{display:flex}`;
+    class CriticalError extends Error {
+        constructor(message) {
+            super(message);
+            this.name = 'CriticalError';
+        }
+    }
     class Player {
         constructor(config, dom) {
             this.config = config;
@@ -91,125 +96,92 @@
         const targetElement = script.dataset.target || '#musik';
         const root = document.querySelector(targetElement);
         if (!root) {
-            throw new Error(`Target element "${targetElement}" not found`);
+            throw new CriticalError(`Target element "${targetElement}" not found`);
         }
         const configUrl = script.dataset.config;
         if (!configUrl) {
-            throw new Error('No data-config attribute provided');
+            throw new CriticalError('No data-config attribute provided');
         }
         const config = await loadConfig(configUrl);
         validateConfig(config);
-        Object.freeze(config);
         if (root.shadowRoot) {
             console.warn('Musik: already initialized');
             return;
-        }
-        if (config.options) {
-            applyOptions(root, config.options);
         }
         const dom = mountPlayerDOM(root, config);
         new Player(config, dom).init();
     }
     catch (err) {
-        if (err instanceof Error) {
+        if (err instanceof CriticalError) {
             console.error(`Musik: ${err.message}`);
+            return;
         }
+        console.error(err);
     }
     async function loadConfig(configUrl) {
         const res = await fetch(configUrl);
         if (!res.ok) {
-            throw new Error(`Failed to load config from "${configUrl}"`);
+            throw new CriticalError(`Failed to load config from "${configUrl}"`);
         }
         return await res.json();
     }
     function validateConfig(config) {
         if (typeof config !== 'object' || config === null) {
-            throw new Error('Config must be an object');
+            throw new CriticalError('Config must be an object');
         }
-        const { tracks, options } = config;
-        if (options) {
-            validateOptions(options);
+        const { style, tracks } = config;
+        if (style !== undefined) {
+            validateStyle(style);
+            Object.freeze(style);
         }
         validateTracks(tracks);
-    }
-    function validateOptions(options) {
-        if (typeof options !== 'object' || options === null) {
-            throw new Error('Options must be an object');
+        const typedTracks = tracks;
+        for (const track of typedTracks) {
+            Object.freeze(track);
         }
-        for (const [key, value] of Object.entries(options)) {
-            if (typeof value !== 'object' || value === null) {
-                throw new Error(`Options.${key} must be an object`);
-            }
-            for (const [k, v] of Object.entries(value)) {
-                if (typeof v !== 'string') {
-                    throw new Error(`Options.${key}.${k} must be a string`);
-                }
+        Object.freeze(typedTracks);
+        Object.freeze(config);
+    }
+    function validateStyle(style) {
+        if (typeof style !== 'object' || style === null) {
+            throw new CriticalError('Style must be an object');
+        }
+        for (const [key, value] of Object.entries(style)) {
+            if (typeof value !== 'string') {
+                throw new CriticalError(`${key}: ${value} must be a string`);
             }
         }
     }
     function validateTracks(tracks) {
         if (!Array.isArray(tracks)) {
-            throw new Error('Tracks must be an array');
+            throw new CriticalError('Tracks must be an array');
         }
         if (tracks.length === 0) {
-            throw new Error('Tracks must contain at least one object');
+            throw new CriticalError('Tracks must contain at least one object');
         }
-        tracks.forEach((track, i) => {
-            if (typeof track !== 'object' || track === null) {
-                throw new Error(`Invalid element at index ${i}`);
+        const requiredKeys = ['artist', 'title', 'artwork', 'audio', 'duration'];
+        for (let i = 0; i < tracks.length; i++) {
+            if (typeof tracks[i] !== 'object' || tracks[i] === null) {
+                throw new CriticalError(`Track at index ${i} is not an object`);
             }
-            const t = track;
-            if (typeof t.artist !== 'string') {
-                throw new Error(`Invalid artist at index ${i}`);
+            const t = tracks[i];
+            for (const key of requiredKeys) {
+                if (typeof t[key] !== 'string') {
+                    throw new CriticalError(`Track at index ${i} is missing a string property: "${key}"`);
+                }
             }
-            if (typeof t.title !== 'string') {
-                throw new Error(`Invalid title at index ${i}`);
-            }
-            if (typeof t.artwork !== 'string') {
-                throw new Error(`Invalid artwork at index ${i}`);
-            }
-            if (typeof t.audio !== 'string') {
-                throw new Error(`Invalid audio at index ${i}`);
-            }
-            if (typeof t.duration !== 'string') {
-                throw new Error(`Invalid duration at index ${i}`);
-            }
-        });
-    }
-    function applyOptions(root, options) {
-        const { colors, fontWeight, radius } = options;
-        if (colors === null || colors === void 0 ? void 0 : colors.textPrimary) {
-            root.style.setProperty('--color-textPrimary', colors.textPrimary);
-        }
-        if (colors === null || colors === void 0 ? void 0 : colors.textSecondary) {
-            root.style.setProperty('--color-textSecondary', colors.textSecondary);
-        }
-        if (colors === null || colors === void 0 ? void 0 : colors.accentPrimary) {
-            root.style.setProperty('--color-accentPrimary', colors.accentPrimary);
-        }
-        if (colors === null || colors === void 0 ? void 0 : colors.accentSecondary) {
-            root.style.setProperty('--color-accentSecondary', colors.accentSecondary);
-        }
-        if (colors === null || colors === void 0 ? void 0 : colors.accentTertiary) {
-            root.style.setProperty('--color-accentTertiary', colors.accentTertiary);
-        }
-        if (fontWeight === null || fontWeight === void 0 ? void 0 : fontWeight.primary) {
-            root.style.setProperty('--fontWeight-primary', fontWeight.primary);
-        }
-        if (fontWeight === null || fontWeight === void 0 ? void 0 : fontWeight.secondary) {
-            root.style.setProperty('--fontWeight-secondary', fontWeight.secondary);
-        }
-        if (fontWeight === null || fontWeight === void 0 ? void 0 : fontWeight.tertiary) {
-            root.style.setProperty('--fontWeight-tertiary', fontWeight.tertiary);
-        }
-        if (radius === null || radius === void 0 ? void 0 : radius.primary) {
-            root.style.setProperty('--radius-primary', radius.primary);
         }
     }
     function mountPlayerDOM(root, config) {
         const shadow = root.attachShadow({ mode: 'open' });
         const style = document.createElement('style');
-        style.textContent = CSS;
+        style.textContent = `*{padding:0;margin:0;box-sizing:border-box}:host{container-type:inline-size;--musik-color-textPrimary: #fff;--musik-color-textSecondary: #fff;--musik-color-accentPrimary: #fff;--musik-color-accentSecondary: #808080;--musik-color-accentTertiary: #808080;--musik-fontWeight-primary: 400;--musik-fontWeight-secondary: 400;--musik-fontWeight-tertiary: 400;--musik-borderRadius-primary: 0}.container{position:relative;display:grid;grid-template-columns:minmax(0, 18.18em) 1fr;gap:1.36em;width:100%}@container (max-width: 45em){.container{grid-template-columns:1fr}}.container .progress{grid-column:span 2;height:.9em;border-radius:var(--musik-borderRadius-primary);background:var(--musik-color-accentSecondary);overflow:hidden;cursor:pointer}@container (max-width: 45em){.container .progress{grid-column:span 1}}.container .progress .bar{width:0;height:100%;background:var(--musik-color-accentPrimary)}.container .meta{cursor:default}.container .meta .image{display:block;aspect-ratio:1/1;object-fit:cover;width:100%;border-radius:var(--musik-borderRadius-primary)}.container .meta .title,.container .meta .artist{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .meta .title{margin-top:.8em;font-size:1.1em;color:var(--musik-color-textPrimary);font-weight:var(--musik-fontWeight-secondary)}.container .meta .artist{font-size:1.1em;color:var(--musik-color-textSecondary);font-weight:var(--musik-fontWeight-tertiary)}.container .playlist{display:flex;flex-direction:column}.container .playlist button{display:grid;grid-template-columns:max-content minmax(0, 1fr) max-content;align-items:center;column-gap:.4em;padding:.7em;border-radius:var(--musik-borderRadius-primary);border:none;background:none;font-family:inherit;font-size:inherit;color:var(--musik-color-textPrimary);font-weight:var(--musik-fontWeight-primary);text-align:left;transition:background .3s;cursor:pointer}.container .playlist button .play-icon,.container .playlist button .pause-icon{display:flex;width:1.3em;fill:var(--musik-color-accentSecondary);transition:fill .3s}.container .playlist button .pause-icon{display:none}.container .playlist button .track-title,.container .playlist button .track-duration{color:var(--musik-color-textPrimary)}.container .playlist button .track-title{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .playlist button .track-duration{margin-left:auto}.container .playlist button.active,.container .playlist button:hover{background:var(--musik-color-accentTertiary)}.container .playlist button.active .play-icon,.container .playlist button.active .pause-icon,.container .playlist button:hover .play-icon,.container .playlist button:hover .pause-icon{fill:var(--musik-color-accentPrimary)}.container .playlist button:focus-visible{outline:2px solid var(--musik-color-textPrimary)}.container.playing .playlist button.active .play-icon{display:none}.container.playing .playlist button.active .pause-icon{display:flex}`;
+        shadow.appendChild(style);
+        if (config.style) {
+            const customStyle = document.createElement('style');
+            customStyle.textContent = createCustomCSS(config.style);
+            shadow.appendChild(customStyle);
+        }
         const containerDiv = document.createElement('div');
         containerDiv.className = 'container';
         const progressSection = document.createElement('section');
@@ -263,7 +235,6 @@
         containerDiv.appendChild(progressSection);
         containerDiv.appendChild(metaSection);
         containerDiv.appendChild(playlistSection);
-        shadow.appendChild(style);
         shadow.appendChild(containerDiv);
         return {
             container: containerDiv,
@@ -275,4 +246,14 @@
             buttons: Array.from(playlistSection.querySelectorAll('button'))
         };
     }
-})();
+    function createCustomCSS(style) {
+        let css = ':host{';
+        for (const [key, value] of Object.entries(style)) {
+            css += `--musik-${key}:${value};`;
+        }
+        css += '}';
+        return css;
+    }
+})().catch(err => {
+    console.error(err);
+});

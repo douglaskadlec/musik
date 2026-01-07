@@ -5,15 +5,15 @@
 
 :host
 	container-type: inline-size
-	--color-textPrimary: #fff
-	--color-textSecondary: #fff
-	--color-accentPrimary: #fff
-	--color-accentSecondary: #808080
-	--color-accentTertiary: #808080
-	--fontWeight-primary: 400
-	--fontWeight-secondary: 400
-	--fontWeight-tertiary: 400
-	--radius-primary: 0
+	--musik-color-textPrimary: #fff
+	--musik-color-textSecondary: #fff
+	--musik-color-accentPrimary: #fff
+	--musik-color-accentSecondary: #808080
+	--musik-color-accentTertiary: #808080
+	--musik-fontWeight-primary: 400
+	--musik-fontWeight-secondary: 400
+	--musik-fontWeight-tertiary: 400
+	--musik-borderRadius-primary: 0
 
 .container
 	position: relative
@@ -26,8 +26,8 @@
 	.progress
 		grid-column: span 2
 		height: 0.9em
-		border-radius: var(--radius-primary)
-		background: var(--color-accentSecondary)
+		border-radius: var(--musik-borderRadius-primary)
+		background: var(--musik-color-accentSecondary)
 		overflow: hidden
 		cursor: pointer
 		@container (max-width: 45em)
@@ -35,7 +35,7 @@
 		.bar
 			width: 0
 			height: 100%
-			background: var(--color-accentPrimary)
+			background: var(--musik-color-accentPrimary)
 	.meta
 		cursor: default
 		.image
@@ -43,7 +43,7 @@
 			aspect-ratio: 1/1
 			object-fit: cover
 			width: 100%
-			border-radius: var(--radius-primary)
+			border-radius: var(--musik-borderRadius-primary)
 		.title, .artist
 			text-overflow: ellipsis
 			overflow: hidden
@@ -51,12 +51,12 @@
 		.title
 			margin-top: 0.8em
 			font-size: 1.1em
-			color: var(--color-textPrimary)
-			font-weight: var(--fontWeight-secondary)
+			color: var(--musik-color-textPrimary)
+			font-weight: var(--musik-fontWeight-secondary)
 		.artist
 			font-size: 1.1em
-			color: var(--color-textSecondary)
-			font-weight: var(--fontWeight-tertiary)
+			color: var(--musik-color-textSecondary)
+			font-weight: var(--musik-fontWeight-tertiary)
 	.playlist
 		display: flex
 		flex-direction: column
@@ -66,25 +66,25 @@
 			align-items: center
 			column-gap: 0.4em
 			padding: 0.7em
-			border-radius: var(--radius-primary)
+			border-radius: var(--musik-borderRadius-primary)
 			border: none
 			background: none
 			font-family: inherit
 			font-size: inherit
-			color: var(--color-textPrimary)
-			font-weight: var(--fontWeight-primary)
+			color: var(--musik-color-textPrimary)
+			font-weight: var(--musik-fontWeight-primary)
 			text-align: left
 			transition: background 0.3s
 			cursor: pointer
 			.play-icon, .pause-icon
 				display: flex
 				width: 1.3em
-				fill: var(--color-accentSecondary)
+				fill: var(--musik-color-accentSecondary)
 				transition: fill 0.3s
 			.pause-icon
 				display: none
 			.track-title, .track-duration
-				color: var(--color-textPrimary)
+				color: var(--musik-color-textPrimary)
 			.track-title
 				text-overflow: ellipsis
 				overflow: hidden
@@ -92,11 +92,11 @@
 			.track-duration
 				margin-left: auto
 		button.active, button:hover
-			background: var(--color-accentTertiary)
+			background: var(--musik-color-accentTertiary)
 			.play-icon, .pause-icon
-				fill: var(--color-accentPrimary)
+				fill: var(--musik-color-accentPrimary)
 		button:focus-visible
-			outline: 2px solid var(--color-textPrimary)
+			outline: 2px solid var(--musik-color-textPrimary)
 .container.playing
 	.playlist
 		button.active
