@@ -1,28 +1,33 @@
-:host
-	container-type: inline-size
-	font-family: inherit, system-ui, -apple-system, BlinkMacSystemFont, sans-serif
-	font-size: inherit
-	font-weight: inherit
-	color: inherit
-
 *
 	padding: 0
 	margin: 0
 	box-sizing: border-box
 
+:host
+	container-type: inline-size
+	--color-textPrimary: #fff
+	--color-textSecondary: #fff
+	--color-accentPrimary: #fff
+	--color-accentSecondary: #808080
+	--color-accentTertiary: #808080
+	--fontWeight-primary: 400
+	--fontWeight-secondary: 400
+	--fontWeight-tertiary: 400
+	--radius-primary: 0
+
 .container
 	position: relative
 	display: grid
-	grid-template-columns: minmax(0, 17em) 1fr
-	gap: 1.4em
+	grid-template-columns: minmax(0, 18.18em) 1fr
+	gap: 1.36em
 	width: 100%
 	@container (max-width: 45em)
 		grid-template-columns: 1fr
 	.progress
 		grid-column: span 2
 		height: 0.9em
-		border-radius: 0.5em
-		background: color-mix(in srgb, currentColor 20%, transparent)
+		border-radius: var(--radius-primary)
+		background: var(--color-accentSecondary)
 		overflow: hidden
 		cursor: pointer
 		@container (max-width: 45em)
@@ -30,8 +35,7 @@
 		.bar
 			width: 0
 			height: 100%
-			background: currentColor
-			opacity: 0.6
+			background: var(--color-accentPrimary)
 	.meta
 		cursor: default
 		.image
@@ -39,14 +43,20 @@
 			aspect-ratio: 1/1
 			object-fit: cover
 			width: 100%
-			border-radius: 0.5em
+			border-radius: var(--radius-primary)
 		.title, .artist
 			text-overflow: ellipsis
 			overflow: hidden
 			white-space: nowrap
 		.title
-			margin-top: 0.7em
+			margin-top: 0.8em
 			font-size: 1.1em
+			color: var(--color-textPrimary)
+			font-weight: var(--fontWeight-secondary)
+		.artist
+			font-size: 1.1em
+			color: var(--color-textSecondary)
+			font-weight: var(--fontWeight-tertiary)
 	.playlist
 		display: flex
 		flex-direction: column
@@ -56,24 +66,25 @@
 			align-items: center
 			column-gap: 0.4em
 			padding: 0.7em
-			border-radius: 0.5em
+			border-radius: var(--radius-primary)
 			border: none
 			background: none
 			font-family: inherit
 			font-size: inherit
-			font-weight: inherit
-			color: inherit
-			text-align: inherit
+			color: var(--color-textPrimary)
+			font-weight: var(--fontWeight-primary)
+			text-align: left
 			transition: background 0.3s
 			cursor: pointer
 			.play-icon, .pause-icon
 				display: flex
 				width: 1.3em
-				fill: currentColor
-				opacity: 0.2
-				transition: opacity 0.3s
+				fill: var(--color-accentSecondary)
+				transition: fill 0.3s
 			.pause-icon
 				display: none
+			.track-title, .track-duration
+				color: var(--color-textPrimary)
 			.track-title
 				text-overflow: ellipsis
 				overflow: hidden
@@ -81,13 +92,13 @@
 			.track-duration
 				margin-left: auto
 		button.active, button:hover
-			background: color-mix(in srgb, currentColor 20%, transparent)
+			background: var(--color-accentTertiary)
 			.play-icon, .pause-icon
-				opacity: 0.6
+				fill: var(--color-accentPrimary)
 		button.playing
 			.play-icon
 				display: none
 			.pause-icon
 				display: flex
 		button:focus-visible
-			outline: 2px solid currentColor
+			outline: 2px solid var(--color-textPrimary)

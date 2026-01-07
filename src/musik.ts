@@ -1,13 +1,3 @@
-interface Track {
-	artist: string
-	title: string
-	artwork: string
-	audio: string
-	duration: string
-}
-
-type MusikConfig = Track[]
-
 interface PlayerDOM {
 	progress: HTMLElement
 	bar: HTMLDivElement
@@ -17,15 +7,49 @@ interface PlayerDOM {
 	buttons: HTMLButtonElement[]
 }
 
+interface MusikOptions {
+	colors?: {
+		textPrimary?: string
+		textSecondary?: string
+		accentPrimary?: string
+		accentSecondary?: string
+		accentTertiary?: string
+	}
+	fontWeight?: {
+		primary?: string
+		secondary?: string
+		tertiary?: string
+	}
+	radius?: {
+		primary?: string
+	}
+}
+
+interface Track {
+	artist: string
+	title: string
+	artwork: string
+	audio: string
+	duration: string // Display-only
+}
+
+interface MusikConfig {
+	options?: MusikOptions
+	tracks: Track[]
+}
+
 ;(async function () {
-	const CSS = `:host{container-type:inline-size;font-family:inherit,system-ui,-apple-system,BlinkMacSystemFont,sans-serif;font-size:inherit;font-weight:inherit;color:inherit}*{padding:0;margin:0;box-sizing:border-box}.container{position:relative;display:grid;grid-template-columns:minmax(0, 17em) 1fr;gap:1.4em;width:100%}@container (max-width: 45em){.container{grid-template-columns:1fr}}.container .progress{grid-column:span 2;height:.9em;border-radius:.5em;background:color-mix(in srgb, currentColor 20%, transparent);overflow:hidden;cursor:pointer}@container (max-width: 45em){.container .progress{grid-column:span 1}}.container .progress .bar{width:0;height:100%;background:currentColor;opacity:.6}.container .meta{cursor:default}.container .meta .image{display:block;aspect-ratio:1/1;object-fit:cover;width:100%;border-radius:.5em}.container .meta .title,.container .meta .artist{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .meta .title{margin-top:.7em;font-size:1.1em}.container .playlist{display:flex;flex-direction:column}.container .playlist button{display:grid;grid-template-columns:max-content minmax(0, 1fr) max-content;align-items:center;column-gap:.4em;padding:.7em;border-radius:.5em;border:none;background:none;font-family:inherit;font-size:inherit;font-weight:inherit;color:inherit;text-align:inherit;transition:background .3s;cursor:pointer}.container .playlist button .play-icon,.container .playlist button .pause-icon{display:flex;width:1.3em;fill:currentColor;opacity:.2;transition:opacity .3s}.container .playlist button .pause-icon{display:none}.container .playlist button .track-title{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .playlist button .track-duration{margin-left:auto}.container .playlist button.active,.container .playlist button:hover{background:color-mix(in srgb, currentColor 20%, transparent)}.container .playlist button.active .play-icon,.container .playlist button.active .pause-icon,.container .playlist button:hover .play-icon,.container .playlist button:hover .pause-icon{opacity:.6}.container .playlist button.playing .play-icon{display:none}.container .playlist button.playing .pause-icon{display:flex}.container .playlist button:focus-visible{outline:2px solid currentColor}`
+	const CSS = `*{padding:0;margin:0;box-sizing:border-box}:host{container-type:inline-size;--color-textPrimary: #fff;--color-textSecondary: #fff;--color-accentPrimary: #fff;--color-accentSecondary: #808080;--color-accentTertiary: #808080;--fontWeight-primary: 400;--fontWeight-secondary: 400;--fontWeight-tertiary: 400;--radius-primary: 0}.container{position:relative;display:grid;grid-template-columns:minmax(0, 18.18em) 1fr;gap:1.36em;width:100%}@container (max-width: 45em){.container{grid-template-columns:1fr}}.container .progress{grid-column:span 2;height:.9em;border-radius:var(--radius-primary);background:var(--color-accentSecondary);overflow:hidden;cursor:pointer}@container (max-width: 45em){.container .progress{grid-column:span 1}}.container .progress .bar{width:0;height:100%;background:var(--color-accentPrimary)}.container .meta{cursor:default}.container .meta .image{display:block;aspect-ratio:1/1;object-fit:cover;width:100%;border-radius:var(--radius-primary)}.container .meta .title,.container .meta .artist{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .meta .title{margin-top:.8em;font-size:1.1em;color:var(--color-textPrimary);font-weight:var(--fontWeight-secondary)}.container .meta .artist{font-size:1.1em;color:var(--color-textSecondary);font-weight:var(--fontWeight-tertiary)}.container .playlist{display:flex;flex-direction:column}.container .playlist button{display:grid;grid-template-columns:max-content minmax(0, 1fr) max-content;align-items:center;column-gap:.4em;padding:.7em;border-radius:var(--radius-primary);border:none;background:none;font-family:inherit;font-size:inherit;color:var(--color-textPrimary);font-weight:var(--fontWeight-primary);text-align:left;transition:background .3s;cursor:pointer}.container .playlist button .play-icon,.container .playlist button .pause-icon{display:flex;width:1.3em;fill:var(--color-accentSecondary);transition:fill .3s}.container .playlist button .pause-icon{display:none}.container .playlist button .track-title,.container .playlist button .track-duration{color:var(--color-textPrimary)}.container .playlist button .track-title{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .playlist button .track-duration{margin-left:auto}.container .playlist button.active,.container .playlist button:hover{background:var(--color-accentTertiary)}.container .playlist button.active .play-icon,.container .playlist button.active .pause-icon,.container .playlist button:hover .play-icon,.container .playlist button:hover .pause-icon{fill:var(--color-accentPrimary)}.container .playlist button.playing .play-icon{display:none}.container .playlist button.playing .pause-icon{display:flex}.container .playlist button:focus-visible{outline:2px solid var(--color-textPrimary)}`
 
 	class Player {
 		private audio: HTMLAudioElement
 		private currentIndex = 0
 
 		constructor(private config: MusikConfig, private dom: PlayerDOM) {
-			this.audio = new Audio(`${this.config[this.currentIndex].audio}`)
+			this.audio = new Audio(this.config.tracks[this.currentIndex].audio)
+		}
+
+		init() {
 			this.bindUI()
 			this.bindAudio()
 		}
@@ -33,7 +57,7 @@ interface PlayerDOM {
 		private bindUI() {
 			this.dom.buttons.forEach((button, i) => {
 				button.addEventListener('click', () => {
-					this.handleClick(button, i)
+					this.handleClick(i)
 				})
 			})
 			this.dom.progress.addEventListener('click', e => {
@@ -50,27 +74,39 @@ interface PlayerDOM {
 				this.dom.bar.style.width = `${(this.audio.currentTime / this.audio.duration) * 100}%`
 			})
 			this.audio.addEventListener('ended', () => {
-				if (!this.config[this.currentIndex + 1]) {
-					this.dom.buttons.forEach(b => b.classList.remove('playing'))
+				if (!this.config.tracks[this.currentIndex + 1]) {
+					this.audio.currentTime = 0
 					this.dom.bar.style.width = '0%'
+					this.dom.buttons.forEach(b => b.classList.remove('playing'))
 					return
 				}
 				this.switchTo(this.currentIndex + 1)
 			})
+			this.audio.addEventListener('play', () => {
+				this.dom.buttons[this.currentIndex].classList.add('playing')
+			})
+			this.audio.addEventListener('pause', () => {
+				this.dom.buttons[this.currentIndex].classList.remove('playing')
+			})
 		}
 
-		private handleClick(button: HTMLButtonElement, i: number) {
+		private handleClick(i: number) {
 			if (i === this.currentIndex) {
-				this.audio.paused ? this.audio.play() : this.audio.pause()
-				button.classList.toggle('playing')
-				return
+				if (this.audio.paused) {
+					this.audio.play()
+				}
+				else {
+					this.audio.pause()
+				}
 			}
-			this.switchTo(i)
+			else {
+				this.switchTo(i)
+			}
 		}
 
 		private switchTo(i: number) {
 			this.currentIndex = i
-			this.audio.src = `${this.config[this.currentIndex].audio}`
+			this.audio.src = this.config.tracks[this.currentIndex].audio
 			this.audio.play()
 			this.updateUI()
 		}
@@ -78,9 +114,9 @@ interface PlayerDOM {
 		private updateUI() {
 			this.dom.buttons.forEach(b => {b.classList.remove('active', 'playing')})
 			this.dom.bar.style.width = '0%'
-			this.dom.artwork.src = `${this.config[this.currentIndex].artwork}`
-			this.dom.title.textContent = this.config[this.currentIndex].title
-			this.dom.artist.textContent = this.config[this.currentIndex].artist
+			this.dom.artwork.src = this.config.tracks[this.currentIndex].artwork
+			this.dom.title.textContent = this.config.tracks[this.currentIndex].title
+			this.dom.artist.textContent = this.config.tracks[this.currentIndex].artist
 			this.dom.buttons[this.currentIndex].classList.add('active', 'playing')
 		}
 	}
@@ -119,15 +155,45 @@ interface PlayerDOM {
 	}
 
 	function validateConfig(config: unknown): asserts config is MusikConfig {
-		if (!Array.isArray(config)) {
-			throw new Error('Config must be an array')
+		if (typeof config !== 'object' || config === null) {
+			throw new Error('Config must be an object')
 		}
-		if (config.length === 0) {
-			throw new Error('Config must contain at least one track')
+		const { tracks, options } = config as {
+			tracks?: unknown
+			options?: unknown
 		}
-		config.forEach((track, i) => {
+		if (options) {
+			validateOptions(options)
+		}
+		validateTracks(tracks)
+	}
+
+	function validateOptions(options: unknown): asserts options is MusikOptions {
+		if (typeof options !== 'object' || options === null) {
+			throw new Error('Options must be an object')
+		}
+		for (const [key, value] of Object.entries(options)) {
+			if (typeof value !== 'object' || value === null) {
+				throw new Error(`Options.${key} must be an object`)
+			}
+			for (const [k, v] of Object.entries(value)) {
+				if (typeof v !== 'string') {
+					throw new Error(`Options.${key}.${k} must be a string`)
+				}
+			}
+		}
+	}
+
+	function validateTracks(tracks: unknown): asserts tracks is Track[] {
+		if (!Array.isArray(tracks)) {
+			throw new Error('Tracks must be an array')
+		}
+		if (tracks.length === 0) {
+			throw new Error('Tracks must contain at least one object')
+		}
+		tracks.forEach((track, i) => {
 			if (typeof track !== 'object' || track === null) {
-				throw new Error(`Invalid track at index ${i}`)
+				throw new Error(`Invalid element at index ${i}`)
 			}
 			const t = track as Partial<Track>
 			if (typeof t.artist !== 'string') {
@@ -166,18 +232,18 @@ interface PlayerDOM {
 		metaSection.className = 'meta'
 		const artworkImg = document.createElement('img')
 		artworkImg.className = 'image'
-		artworkImg.src = config[0].artwork
+		artworkImg.src = config.tracks[0].artwork
 		artworkImg.alt = ''
 		artworkImg.loading = 'lazy'
 		const titleP = document.createElement('p')
 		titleP.className = 'title'
-		titleP.textContent = config[0].title
+		titleP.textContent = config.tracks[0].title
 		const artistP = document.createElement('p')
 		artistP.className = 'artist'
-		artistP.textContent = config[0].artist
+		artistP.textContent = config.tracks[0].artist
 		const playlistSection = document.createElement('section')
 		playlistSection.className = 'playlist'
-		config.forEach((track, i) => {
+		config.tracks.forEach((track, i) => {
 			const button = document.createElement('button')
 			if (i === 0) {
 				button.className = 'active'
@@ -186,10 +252,10 @@ interface PlayerDOM {
 			button.setAttribute('aria-label', `Play ${track.title} by ${track.artist}`)
 			const playIconDiv = document.createElement('div')
 			playIconDiv.className = 'play-icon'
-			playIconDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z"/></svg>`
+			playIconDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M187.2 100.9C174.8 94.1 159.8 94.4 147.6 101.6C135.4 108.8 128 121.9 128 136L128 504C128 518.1 135.5 531.2 147.6 538.4C159.7 545.6 174.8 545.9 187.2 539.1L523.2 355.1C536 348.1 544 334.6 544 320C544 305.4 536 291.9 523.2 284.9L187.2 100.9z"/></svg>'
 			const pauseIconDiv = document.createElement('div')
 			pauseIconDiv.className = 'pause-icon'
-			pauseIconDiv.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M176 96C149.5 96 128 117.5 128 144L128 496C128 522.5 149.5 544 176 544L240 544C266.5 544 288 522.5 288 496L288 144C288 117.5 266.5 96 240 96L176 96zM400 96C373.5 96 352 117.5 352 144L352 496C352 522.5 373.5 544 400 544L464 544C490.5 544 512 522.5 512 496L512 144C512 117.5 490.5 96 464 96L400 96z"/></svg>`
+			pauseIconDiv.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 640"><path d="M176 96C149.5 96 128 117.5 128 144L128 496C128 522.5 149.5 544 176 544L240 544C266.5 544 288 522.5 288 496L288 144C288 117.5 266.5 96 240 96L176 96zM400 96C373.5 96 352 117.5 352 144L352 496C352 522.5 373.5 544 400 544L464 544C490.5 544 512 522.5 512 496L512 144C512 117.5 490.5 96 464 96L400 96z"/></svg>'
 			const trackTitleP = document.createElement('p')
 			trackTitleP.className = 'track-title'
 			trackTitleP.textContent = track.title
@@ -209,6 +275,11 @@ interface PlayerDOM {
 		containerDiv.appendChild(progressSection)
 		containerDiv.appendChild(metaSection)
 		containerDiv.appendChild(playlistSection)
+
+		if (config.options) {
+			applyOptions(root, config.options)
+		}
+
 		shadow.appendChild(style)
 		shadow.appendChild(containerDiv)
 		const dom: PlayerDOM = {
@@ -219,6 +290,38 @@ interface PlayerDOM {
 			artist: artistP,
 			buttons: Array.from(playlistSection.querySelectorAll('button'))
 		}
-		new Player(config, dom)
+		const player = new Player(config, dom)
+		player.init()
+	}
+
+	function applyOptions(root: HTMLElement, options: MusikOptions) {
+		const { colors, fontWeight, radius } = options
+		if (colors?.textPrimary) {
+			root.style.setProperty('--color-textPrimary', colors.textPrimary)
+		}
+		if (colors?.textSecondary) {
+			root.style.setProperty('--color-textSecondary', colors.textSecondary)
+		}
+		if (colors?.accentPrimary) {
+			root.style.setProperty('--color-accentPrimary', colors.accentPrimary)
+		}
+		if (colors?.accentSecondary) {
+			root.style.setProperty('--color-accentSecondary', colors.accentSecondary)
+		}
+		if (colors?.accentTertiary) {
+			root.style.setProperty('--color-accentTertiary', colors.accentTertiary)
+		}
+		if (fontWeight?.primary) {
+			root.style.setProperty('--fontWeight-primary', fontWeight.primary)
+		}
+		if (fontWeight?.secondary) {
+			root.style.setProperty('--fontWeight-secondary', fontWeight.secondary)
+		}
+		if (fontWeight?.tertiary) {
+			root.style.setProperty('--fontWeight-tertiary', fontWeight.tertiary)
+		}
+		if (radius?.primary) {
+			root.style.setProperty('--radius-primary', radius.primary)
+		}
 	}
 })()
