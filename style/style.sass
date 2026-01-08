@@ -5,6 +5,9 @@
 
 :host
 	container-type: inline-size
+	--musik-gridTemplateColumns: 17em 1fr
+	--musik-columnGap: 1.3em
+	--musik-rowGap: 1.3em
 	--musik-color-textPrimary: #fff
 	--musik-color-textSecondary: #fff
 	--musik-color-textTertiary: #fff
@@ -14,20 +17,24 @@
 	--musik-fontWeight-primary: 400
 	--musik-fontWeight-secondary: 400
 	--musik-fontWeight-tertiary: 400
-	--musik-borderRadius-primary: 0
+	--musik-borderRadius: 0
+
+:focus-visible
+	outline: 2px solid var(--musik-color-textPrimary)
 
 .container
 	position: relative
 	display: grid
-	grid-template-columns: minmax(0, 18.18em) 1fr
-	gap: 1.36em
+	grid-template-columns: var(--musik-gridTemplateColumns)
+	column-gap: var(--musik-columnGap)
+	row-gap: var(--musik-rowGap)
 	width: 100%
 	@container (max-width: 45em)
 		grid-template-columns: 1fr
 	.progress
 		grid-column: span 2
 		height: 0.9em
-		border-radius: var(--musik-borderRadius-primary)
+		border-radius: var(--musik-borderRadius)
 		background: var(--musik-color-accentSecondary)
 		overflow: hidden
 		cursor: pointer
@@ -44,7 +51,7 @@
 			aspect-ratio: 1/1
 			object-fit: cover
 			width: 100%
-			border-radius: var(--musik-borderRadius-primary)
+			border-radius: var(--musik-borderRadius)
 		.title, .artist
 			text-overflow: ellipsis
 			overflow: hidden
@@ -67,7 +74,7 @@
 			align-items: center
 			column-gap: 0.4em
 			padding: 0.7em
-			border-radius: var(--musik-borderRadius-primary)
+			border-radius: var(--musik-borderRadius)
 			border: none
 			background: none
 			font-family: inherit
@@ -96,8 +103,6 @@
 			background: var(--musik-color-accentTertiary)
 			.play-icon, .pause-icon
 				fill: var(--musik-color-accentPrimary)
-		button:focus-visible
-			outline: 2px solid var(--musik-color-textPrimary)
 .container.playing
 	.playlist
 		button.active

@@ -32,12 +32,33 @@
                     return;
                 this.audio.currentTime = percent * this.audio.duration;
             });
+            this.dom.progress.addEventListener('keydown', e => {
+                switch (e.key) {
+                    case 'ArrowRight':
+                        if (!this.audio.duration)
+                            return;
+                        this.audio.currentTime = Math.min(this.audio.currentTime + (0.05 * this.audio.duration), this.audio.duration);
+                        break;
+                    case 'ArrowLeft':
+                        if (!this.audio.duration)
+                            return;
+                        this.audio.currentTime = Math.max(this.audio.currentTime - (0.05 * this.audio.duration), 0);
+                        break;
+                    case 'Home':
+                        this.audio.currentTime = 0;
+                        break;
+                    default:
+                        return;
+                }
+            });
         }
         bindAudio() {
             this.audio.addEventListener('timeupdate', () => {
                 if (!this.audio.duration)
                     return;
-                this.dom.bar.style.width = `${Math.min((this.audio.currentTime / this.audio.duration) * 100, 100)}%`;
+                const percent = Math.min((this.audio.currentTime / this.audio.duration) * 100, 100);
+                this.dom.progress.setAttribute('aria-valuenow', Math.round(percent).toString());
+                this.dom.bar.style.width = `${percent}%`;
             });
             this.audio.addEventListener('ended', () => {
                 if (this.config.tracks[this.currentIndex + 1]) {
@@ -175,7 +196,7 @@
     function mountPlayerDOM(root, config) {
         const shadow = root.attachShadow({ mode: 'open' });
         const style = document.createElement('style');
-        style.textContent = `*{padding:0;margin:0;box-sizing:border-box}:host{container-type:inline-size;--musik-color-textPrimary: #fff;--musik-color-textSecondary: #fff;--musik-color-textTertiary: #fff;--musik-color-accentPrimary: #fff;--musik-color-accentSecondary: #808080;--musik-color-accentTertiary: #808080;--musik-fontWeight-primary: 400;--musik-fontWeight-secondary: 400;--musik-fontWeight-tertiary: 400;--musik-borderRadius-primary: 0}.container{position:relative;display:grid;grid-template-columns:minmax(0, 18.18em) 1fr;gap:1.36em;width:100%}@container (max-width: 45em){.container{grid-template-columns:1fr}}.container .progress{grid-column:span 2;height:.9em;border-radius:var(--musik-borderRadius-primary);background:var(--musik-color-accentSecondary);overflow:hidden;cursor:pointer}@container (max-width: 45em){.container .progress{grid-column:span 1}}.container .progress .bar{width:0;height:100%;background:var(--musik-color-accentPrimary)}.container .meta{cursor:default}.container .meta .image{display:block;aspect-ratio:1/1;object-fit:cover;width:100%;border-radius:var(--musik-borderRadius-primary)}.container .meta .title,.container .meta .artist{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .meta .title{margin-top:.8em;font-size:1.1em;color:var(--musik-color-textSecondary);font-weight:var(--musik-fontWeight-secondary)}.container .meta .artist{font-size:1.1em;color:var(--musik-color-textTertiary);font-weight:var(--musik-fontWeight-tertiary)}.container .playlist{display:flex;flex-direction:column}.container .playlist button{display:grid;grid-template-columns:max-content minmax(0, 1fr) max-content;align-items:center;column-gap:.4em;padding:.7em;border-radius:var(--musik-borderRadius-primary);border:none;background:none;font-family:inherit;font-size:inherit;color:var(--musik-color-textPrimary);font-weight:var(--musik-fontWeight-primary);text-align:left;transition:background .3s;cursor:pointer}.container .playlist button .play-icon,.container .playlist button .pause-icon{display:flex;width:1.3em;fill:var(--musik-color-accentSecondary);transition:fill .3s}.container .playlist button .pause-icon{display:none}.container .playlist button .track-title,.container .playlist button .track-duration{color:var(--musik-color-textPrimary)}.container .playlist button .track-title{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .playlist button .track-duration{margin-left:auto}.container .playlist button.active,.container .playlist button:hover{background:var(--musik-color-accentTertiary)}.container .playlist button.active .play-icon,.container .playlist button.active .pause-icon,.container .playlist button:hover .play-icon,.container .playlist button:hover .pause-icon{fill:var(--musik-color-accentPrimary)}.container .playlist button:focus-visible{outline:2px solid var(--musik-color-textPrimary)}.container.playing .playlist button.active .play-icon{display:none}.container.playing .playlist button.active .pause-icon{display:flex}`;
+        style.textContent = `*{padding:0;margin:0;box-sizing:border-box}:host{container-type:inline-size;--musik-gridTemplateColumns: 17em 1fr;--musik-columnGap: 1.3em;--musik-rowGap: 1.3em;--musik-color-textPrimary: #fff;--musik-color-textSecondary: #fff;--musik-color-textTertiary: #fff;--musik-color-accentPrimary: #fff;--musik-color-accentSecondary: #808080;--musik-color-accentTertiary: #808080;--musik-fontWeight-primary: 400;--musik-fontWeight-secondary: 400;--musik-fontWeight-tertiary: 400;--musik-borderRadius: 0}:focus-visible{outline:2px solid var(--musik-color-textPrimary)}.container{position:relative;display:grid;grid-template-columns:var(--musik-gridTemplateColumns);column-gap:var(--musik-columnGap);row-gap:var(--musik-rowGap);width:100%}@container (max-width: 45em){.container{grid-template-columns:1fr}}.container .progress{grid-column:span 2;height:.9em;border-radius:var(--musik-borderRadius);background:var(--musik-color-accentSecondary);overflow:hidden;cursor:pointer}@container (max-width: 45em){.container .progress{grid-column:span 1}}.container .progress .bar{width:0;height:100%;background:var(--musik-color-accentPrimary)}.container .meta{cursor:default}.container .meta .image{display:block;aspect-ratio:1/1;object-fit:cover;width:100%;border-radius:var(--musik-borderRadius)}.container .meta .title,.container .meta .artist{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .meta .title{margin-top:.8em;font-size:1.1em;color:var(--musik-color-textSecondary);font-weight:var(--musik-fontWeight-secondary)}.container .meta .artist{font-size:1.1em;color:var(--musik-color-textTertiary);font-weight:var(--musik-fontWeight-tertiary)}.container .playlist{display:flex;flex-direction:column}.container .playlist button{display:grid;grid-template-columns:max-content minmax(0, 1fr) max-content;align-items:center;column-gap:.4em;padding:.7em;border-radius:var(--musik-borderRadius);border:none;background:none;font-family:inherit;font-size:inherit;color:var(--musik-color-textPrimary);font-weight:var(--musik-fontWeight-primary);text-align:left;transition:background .3s;cursor:pointer}.container .playlist button .play-icon,.container .playlist button .pause-icon{display:flex;width:1.3em;fill:var(--musik-color-accentSecondary);transition:fill .3s}.container .playlist button .pause-icon{display:none}.container .playlist button .track-title,.container .playlist button .track-duration{color:var(--musik-color-textPrimary)}.container .playlist button .track-title{text-overflow:ellipsis;overflow:hidden;white-space:nowrap}.container .playlist button .track-duration{margin-left:auto}.container .playlist button.active,.container .playlist button:hover{background:var(--musik-color-accentTertiary)}.container .playlist button.active .play-icon,.container .playlist button.active .pause-icon,.container .playlist button:hover .play-icon,.container .playlist button:hover .pause-icon{fill:var(--musik-color-accentPrimary)}.container.playing .playlist button.active .play-icon{display:none}.container.playing .playlist button.active .pause-icon{display:flex}`;
         shadow.appendChild(style);
         if (config.style) {
             const customStyle = document.createElement('style');
@@ -186,6 +207,12 @@
         containerDiv.className = 'container';
         const progressSection = document.createElement('section');
         progressSection.className = 'progress';
+        progressSection.tabIndex = 0;
+        progressSection.setAttribute('role', 'slider');
+        progressSection.setAttribute('aria-label', 'Playback position');
+        progressSection.setAttribute('aria-valuemin', '0');
+        progressSection.setAttribute('aria-valuemax', '100');
+        progressSection.setAttribute('aria-valuenow', '0');
         const barDiv = document.createElement('div');
         barDiv.className = 'bar';
         const metaSection = document.createElement('section');
