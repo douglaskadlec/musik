@@ -248,9 +248,17 @@ class Musik extends HTMLElement {
 				case 'Home':
 					this.audio.currentTime = 0
 					break
+				case 'End':
+					if (!this.audio.duration) return
+					this.audio.currentTime = this.audio.duration
+					break
+				case ' ':
+					this.handleClick(this.currentIndex)
+					break
 				default:
 					return
 			}
+			e.preventDefault()
 		})
 	}
 
@@ -259,6 +267,7 @@ class Musik extends HTMLElement {
 			if (!this.audio.duration) return
 			const percent = Math.min((this.audio.currentTime / this.audio.duration) * 100, 100)
 			this.dom.progress.setAttribute('aria-valuenow', Math.round(percent).toString())
+			this.dom.progress.setAttribute('aria-valuetext', `${this.formatTime(this.audio.currentTime)} of ${this.formatTime(this.audio.duration)}`)
 			this.dom.bar.style.width = `${percent}%`
 		})
 		this.audio.addEventListener('ended', () => {
@@ -277,10 +286,21 @@ class Musik extends HTMLElement {
 		})
 	}
 
+	private formatTime(seconds: number): string {
+		if (!Number.isFinite(seconds) || seconds < 0) {
+			return '0:00'
+		}
+		const mins = Math.floor(seconds / 60)
+		const secs = Math.floor(seconds % 60)
+		return `${mins}:${secs.toString().padStart(2, '0')}`
+	}
+
 	private handleClick(i: number) {
 		if (i === this.currentIndex) {
 			if (this.audio.paused) {
-				this.audio.play()
+				this.audio.play().catch(err => {
+					console.error(`Musik: ${err.message}`)
+				})
 			}
 			else {
 				this.audio.pause()
@@ -295,6 +315,8 @@ class Musik extends HTMLElement {
 		this.currentIndex = i
 		this.audio.pause()
 		this.audio.currentTime = 0
+		this.audio.src = ''
+		this.audio.load()
 		this.audio.src = this.config.tracks[this.currentIndex].audio
 		this.audio.load()
 		this.audio.play().catch(err => {
@@ -316,6 +338,7 @@ class Musik extends HTMLElement {
 	disconnectedCallback() {
 		if (this.audio) {
 			this.audio.pause()
+			this.audio.currentTime = 0
 			this.audio.src = ''
 			this.audio.load()
 		}
