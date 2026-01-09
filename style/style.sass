@@ -14,21 +14,33 @@
 	--musik-gridTemplateColumns: 17em 1fr
 	--musik-columnGap: 1.3em
 	--musik-rowGap: 1.3em
-	--musik-color-textPrimary: #fff
-	--musik-color-textSecondary: #fff
-	--musik-color-textTertiary: #fff
-	--musik-color-accentPrimary: #fff
-	--musik-color-accentSecondary: #808080
-	--musik-color-accentTertiary: #808080
+	--musik-accentColor-primary: #fff
+	--musik-accentColor-secondary: #808080
+	--musik-accentColor-tertiary: #808080
+	--musik-fontFamily-primary: inherit
+	--musik-fontFamily-secondary: inherit
+	--musik-fontFamily-tertiary: inherit
+	--musik-fontSize-primary: 1em
+	--musik-fontSize-secondary: 1.1em
+	--musik-fontSize-tertiary: 1.1em
 	--musik-fontWeight-primary: 400
 	--musik-fontWeight-secondary: 400
 	--musik-fontWeight-tertiary: 400
+	--musik-fontColor-primary: #fff
+	--musik-fontColor-secondary: #fff
+	--musik-fontColor-tertiary: #fff
 	--musik-borderRadius: 0
-	--musik-aspectRatio: 1 / 1
-	--musik-objectFit: contain
+	--musik-aspectRatio: 1
+	--musik-objectFit: fill
+	--musik-transitionSpeed: 0.3s
+	--musik-progressHeight: 0.9em
+	--musik-iconWidth: 1.3em
+	--musik-space-1: 0.8em
+	--musik-space-2: 0.4em
+	--musik-space-3: 0.7em
 
 :focus-visible
-	outline: 2px solid var(--musik-color-textPrimary)
+	outline: 2px solid var(--musik-fontColor-primary)
 
 .container
 	position: relative
@@ -41,15 +53,15 @@
 		grid-template-columns: 1fr
 	.progress
 		grid-column: 1 / -1
-		height: 0.9em
+		height: var(--musik-progressHeight)
 		border-radius: var(--musik-borderRadius)
-		background: var(--musik-color-accentSecondary)
-		overflow: hidden
+		background: var(--musik-accentColor-secondary)
 		cursor: pointer
+		overflow: hidden
 		.bar
 			width: 0
 			height: 100%
-			background: var(--musik-color-accentPrimary)
+			background: var(--musik-accentColor-primary)
 	.meta
 		cursor: default
 		.image
@@ -61,14 +73,16 @@
 		.title, .artist
 			@extend %text-truncate
 		.title
-			margin-top: 0.8em
-			font-size: 1.1em
-			color: var(--musik-color-textSecondary)
+			margin-top: var(--musik-space-1)
+			font-family: var(--musik-fontFamily-secondary)
+			font-size: var(--musik-fontSize-secondary)
 			font-weight: var(--musik-fontWeight-secondary)
+			color: var(--musik-fontColor-secondary)
 		.artist
-			font-size: 1.1em
-			color: var(--musik-color-textTertiary)
+			font-family: var(--musik-fontFamily-tertiary)
+			font-size: var(--musik-fontSize-tertiary)
 			font-weight: var(--musik-fontWeight-tertiary)
+			color: var(--musik-fontColor-tertiary)
 	.playlist
 		display: flex
 		flex-direction: column
@@ -76,35 +90,35 @@
 			display: grid
 			grid-template-columns: max-content minmax(0, 1fr) max-content
 			align-items: center
-			column-gap: 0.4em
-			padding: 0.7em
+			column-gap: var(--musik-space-2)
+			padding: var(--musik-space-3)
 			border-radius: var(--musik-borderRadius)
 			border: none
 			background: none
-			font-family: inherit
-			font-size: inherit
-			color: var(--musik-color-textPrimary)
+			font-family: var(--musik-fontFamily-primary)
+			font-size: var(--musik-fontSize-primary)
 			font-weight: var(--musik-fontWeight-primary)
+			color: var(--musik-fontColor-primary)
 			text-align: left
-			transition: background 0.3s
+			transition: background var(--musik-transitionSpeed)
 			cursor: pointer
 			.play-icon, .pause-icon
 				display: flex
-				width: 1.3em
-				fill: var(--musik-color-accentSecondary)
-				transition: fill 0.3s
+				width: var(--musik-iconWidth)
+				fill: var(--musik-accentColor-secondary)
+				transition: fill var(--musik-transitionSpeed)
 			.pause-icon
 				display: none
 			.track-title, .track-duration
-				color: var(--musik-color-textPrimary)
+				color: var(--musik-fontColor-primary)
 			.track-title
 				@extend %text-truncate
 			.track-duration
 				margin-left: auto
 		button.active, button:hover
-			background: var(--musik-color-accentTertiary)
+			background: var(--musik-accentColor-tertiary)
 			.play-icon, .pause-icon
-				fill: var(--musik-color-accentPrimary)
+				fill: var(--musik-accentColor-primary)
 .container.playing
 	.playlist
 		button.active
