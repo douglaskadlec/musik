@@ -1,3 +1,8 @@
+%text-truncate
+	overflow: hidden
+	text-overflow: ellipsis
+	white-space: nowrap
+
 *
 	padding: 0
 	margin: 0
@@ -52,9 +57,7 @@
 			width: 100%
 			border-radius: var(--musik-borderRadius)
 		.title, .artist
-			text-overflow: ellipsis
-			overflow: hidden
-			white-space: nowrap
+			@extend %text-truncate
 		.title
 			margin-top: 0.8em
 			font-size: 1.1em
@@ -93,9 +96,7 @@
 			.track-title, .track-duration
 				color: var(--musik-color-textPrimary)
 			.track-title
-				text-overflow: ellipsis
-				overflow: hidden
-				white-space: nowrap
+				@extend %text-truncate
 			.track-duration
 				margin-left: auto
 		button.active, button:hover
