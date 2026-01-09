@@ -24,6 +24,8 @@
 	--musik-fontWeight-secondary: 400
 	--musik-fontWeight-tertiary: 400
 	--musik-borderRadius: 0
+	--musik-aspectRatio: 1 / 1
+	--musik-objectFit: contain
 
 :focus-visible
 	outline: 2px solid var(--musik-color-textPrimary)
@@ -38,7 +40,7 @@
 	@container (max-width: 45em)
 		grid-template-columns: 1fr
 	.progress
-		grid-column: 1/-1
+		grid-column: 1 / -1
 		height: 0.9em
 		border-radius: var(--musik-borderRadius)
 		background: var(--musik-color-accentSecondary)
@@ -52,8 +54,8 @@
 		cursor: default
 		.image
 			display: block
-			aspect-ratio: 1/1
-			object-fit: cover
+			aspect-ratio: var(--musik-aspectRatio)
+			object-fit: var(--musik-objectFit)
 			width: 100%
 			border-radius: var(--musik-borderRadius)
 		.title, .artist
