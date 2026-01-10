@@ -3,7 +3,7 @@
 		"target": "ES2019",
 		"lib": ["DOM", "ES2019"],
 		"module": "none",
-		"outFile": "dist/musik.js",
+		"outFile": "musik.js",
 		"removeComments": false,
 		"sourceMap": false,
 		"strict": true,

@@ -1,4 +1,20 @@
 "use strict";
+/*! @preserve
+ * Musik
+ * v1.0.0
+ *
+ * A lightweight, dependency-free web component for building customizable
+ * audio playlists using the native HTML Audio API.
+ *
+ * Author: Douglas Kadlec
+ *
+ * Repository: https://github.com/douglaskadlec/musik
+ * License: ISC
+ *
+ * Third-party notices:
+ * Font Awesome Free v7.1.0 by @fontawesome - https://fontawesome.com
+ * License - https://fontawesome.com/license/free Copyright 2026 Fonticons, Inc.
+ */
 class CriticalError extends Error {
     constructor(message) {
         super(message);

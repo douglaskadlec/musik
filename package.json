@@ -1,16 +1,40 @@
 {
-  "name": "musik",
-  "version": "1.0.0",
-  "description": "",
-  "main": "musik.js",
-  "scripts": {
-    "build": "tsc"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "type": "commonjs",
-  "devDependencies": {
-    "typescript": "5.9.3"
-  }
+	"name": "@douglaskadlec/musik",
+	"version": "1.0.0",
+	"description": "A web component for building and playing custom audio playlists.",
+	"main": "musik.js",
+	"exports": {
+		".": "./musik.js"
+	},
+	"files": [
+		"musik.js",
+		"README.md"
+	],
+	"scripts": {
+		"build": "tsc"
+	},
+	"keywords": [
+		"web-component",
+		"custom-elements",
+		"audio",
+		"music-player",
+		"html-audio",
+		"shadow-dom",
+		"css-variables",
+		"design-tokens"
+	],
+	"author": "Douglas Kadlec",
+	"license": "ISC",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/douglaskadlec/musik"
+	},
+	"bugs": {
+		"url": "https://github.com/douglaskadlec/musik/issues"
+	},
+	"homepage": "https://github.com/douglaskadlec/musik#readme",
+	"type": "commonjs",
+	"devDependencies": {
+		"typescript": "5.9.3"
+	}
 }
