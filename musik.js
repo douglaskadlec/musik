@@ -3,8 +3,7 @@
  * Musik
  * v1.0.0
  *
- * A lightweight, dependency-free web component for building customizable
- * audio playlists using the native HTML Audio API.
+ * A web component for building and playing custom audio playlists.
  *
  * Author: Douglas Kadlec
  *
