@@ -61,7 +61,7 @@ interface Track {
 }
 ```
 
-Example:
+Example JSON:
 
 ```json
 {
@@ -165,7 +165,7 @@ Musik exposes the following CSS custom properties:
 --musik-component-icon-size
 ```
 
-Example:
+Example CSS:
 
 ```css
 musik-app {
